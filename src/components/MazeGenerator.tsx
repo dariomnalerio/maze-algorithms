@@ -83,6 +83,8 @@ function MazeGenerator() {
   createEffect(() => {
     if (size().cols > 20 || size().rows > 20) {
       setSize({ rows: 20, cols: 20 });
+    } else if (size().cols < 4 || size().rows < 4) {
+      setSize({ rows: 4, cols: 4 });
     }
   });
 
@@ -100,7 +102,6 @@ function MazeGenerator() {
           Size
         </label>
         <Input
-          max={30}
           id='size'
           type='number'
           value={size().rows}
