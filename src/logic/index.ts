@@ -1,4 +1,7 @@
+import { createSignal } from 'solid-js';
+import { currentSignal, finishSignal, mazeSignal, sizeSignal, solutionSignal, startSignal } from '../stores';
 import { Cell, Maze } from '../types';
+import { generateBaseMaze, sleep } from '../utils';
 
 function getNeighbors(cell: Cell, maze: Maze): Cell[] {
   const { x, y } = cell;
@@ -53,6 +56,54 @@ export function removeWalls({ current, next }: { current: Cell; next: Cell }) {
     current.walls.bottom = false;
     next.walls.top = false;
   }
+}
+
+export async function generateMaze() {
+  const [_maze, setMaze] = mazeSignal;
+  const [current, setCurrent] = currentSignal;
+  const [size] = sizeSignal;
+  const [_solution, setSolution] = solutionSignal;
+  const [start, setStart] = startSignal;
+  const [_finish, setFinish] = finishSignal;
+  const [_isGenerating, setIsGenerating] = createSignal(false);
+  setSolution([]);
+  setIsGenerating(true);
+  const initialMaze = generateBaseMaze();
+
+  const startX = Math.floor(Math.random() * size().cols);
+  const startY = Math.floor(Math.random() * size().rows);
+  setStart(initialMaze[startY][startX]);
+  setFinish(initialMaze[size().rows - 1][size().cols - 1]);
+  setCurrent(start());
+  const stack: Cell[] = [];
+
+  current().visited = true;
+
+  setMaze(initialMaze);
+
+  while (true) {
+    const neighbors = getUnvisitedNeighbors({
+      cell: current(),
+      maze: initialMaze,
+      rows: size().rows,
+      cols: size().cols,
+    });
+
+    if (neighbors.length > 0) {
+      const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+      removeWalls({ current: current(), next });
+      stack.push(current());
+      setCurrent(next);
+      current().visited = true;
+    } else if (stack.length > 0) {
+      setCurrent(stack.pop() as Cell);
+    } else {
+      break;
+    }
+    setMaze([...initialMaze]);
+    await sleep(1);
+  }
+  setIsGenerating(false);
 }
 
 export async function solveMazeBFS(maze: Maze, start: Cell, end: Cell): Promise<Cell[]> {

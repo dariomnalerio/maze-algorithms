@@ -1,69 +1,19 @@
 import { createEffect, createSignal } from 'solid-js';
-import {
-  currentSignal,
-  finishSignal,
-  isSolvingSignal,
-  mazeSignal,
-  sizeSignal,
-  solutionSignal,
-  startSignal,
-} from '../stores';
+import { finishSignal, isSolvingSignal, mazeSignal, sizeSignal, solutionSignal, startSignal } from '../stores';
 import { Cell } from '../types';
-import { getUnvisitedNeighbors, removeWalls, solveMazeBFS } from '../logic';
-import { generateBaseMaze, sleep } from '../utils';
+import { generateMaze, solveMazeBFS } from '../logic';
+import { sleep } from '../utils';
 import Input from './ui/input';
 import Button from './ui/button';
 
 function MazeGenerator() {
-  const [maze, setMaze] = mazeSignal;
-  const [current, setCurrent] = currentSignal;
+  const [maze] = mazeSignal;
   const [size, setSize] = sizeSignal;
   const [_solution, setSolution] = solutionSignal;
-  const [start, setStart] = startSignal;
-  const [finish, setFinish] = finishSignal;
-  const [isGenerating, setIsGenerating] = createSignal(false);
+  const [start] = startSignal;
+  const [finish] = finishSignal;
+  const [isGenerating] = createSignal(false);
   const [isSolving, setIsSolving] = isSolvingSignal;
-
-  async function generateMaze() {
-    setSolution([]);
-    setIsGenerating(true);
-    const initialMaze = generateBaseMaze();
-
-    const startX = Math.floor(Math.random() * size().cols);
-    const startY = Math.floor(Math.random() * size().rows);
-    setStart(initialMaze[startY][startX]);
-    setFinish(initialMaze[size().rows - 1][size().cols - 1]);
-    setCurrent(start());
-    const stack: Cell[] = [];
-
-    current().visited = true;
-
-    setMaze(initialMaze);
-
-    while (true) {
-      const neighbors = getUnvisitedNeighbors({
-        cell: current(),
-        maze: initialMaze,
-        rows: size().rows,
-        cols: size().cols,
-      });
-
-      if (neighbors.length > 0) {
-        const next = neighbors[Math.floor(Math.random() * neighbors.length)];
-        removeWalls({ current: current(), next });
-        stack.push(current());
-        setCurrent(next);
-        current().visited = true;
-      } else if (stack.length > 0) {
-        setCurrent(stack.pop() as Cell);
-      } else {
-        break;
-      }
-      setMaze([...initialMaze]);
-      await sleep(1);
-    }
-    setIsGenerating(false);
-  }
 
   const displaySolutionStepByStep = async (solutionPath: Cell[]) => {
     for (let i = 0; i < solutionPath.length; i++) {
