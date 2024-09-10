@@ -33,8 +33,8 @@ function MazeGenerator() {
   createEffect(() => {
     if (size().cols > 20 || size().rows > 20) {
       setSize({ rows: 20, cols: 20 });
-    } else if (size().cols < 4 || size().rows < 4) {
-      setSize({ rows: 4, cols: 4 });
+    } else if (size().cols < 1 || size().rows < 1) {
+      setSize({ rows: 1, cols: 1 });
     }
   });
 
