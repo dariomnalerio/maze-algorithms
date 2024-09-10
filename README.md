@@ -1,16 +1,8 @@
 # Maze Explorer
 
 Maze Explorer is a simple project created for fun and to learn about maze generation and solving algorithms using Solid.js.
-
-## Project Overview
-
-### Components
- - MazeGeneration: Uses a depth-first search algorithm to generate the maze.
- - MazeSolving: Uses a breadth-first search algorithm to find the solution path.
- - Button: A reusable button component.
- - Input: A reusable input component.
-  
-### Algorithms
+ 
+## Algorithms
 - Maze Generation: Uses a depth-first search algorithm to generate the maze.
 - Maze Solving: Uses a breadth-first search algorithm to find the solution path.
 
